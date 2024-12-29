@@ -1,0 +1,32 @@
+{
+  "name": "promptdock",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "bin": {
+    "prompt": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "start": "node dist/index.js"
+  },
+  "author": {
+    "name": "Stefano Amorelli",
+    "email": "stefano@amorelli.tech",
+    "url": "https://amorelli.tech"
+  },
+  "license": "ISC",
+  "description": "Lightweight CLI to manage, version, and fetch reusable AI prompts from a Git-backed registry. Supports metadata, namespacing, format transforms (Claude, Cursor, etc.), and CI integration.",
+  "dependencies": {
+    "commander": "^14.0.0",
+    "execa": "^9.6.0",
+    "gray-matter": "^4.0.3",
+    "simple-git": "^3.28.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.10",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}

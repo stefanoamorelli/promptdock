@@ -1,0 +1,41 @@
+name: 'Get Prompt'
+description: 'Fetch prompts from promptdock repository with version support'
+author: 'Stefano Amorelli'
+
+inputs:
+  prompt:
+    description: 'Prompt to fetch (format: name@version, namespace/name@version, or name@latest)'
+    required: true
+  repository:
+    description: 'GitHub repository containing prompts'
+    required: true
+  token:
+    description: 'GitHub token for repository access'
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  prompt:
+    description: 'The prompt content (without YAML frontmatter)'
+  name:
+    description: 'Prompt name'
+  namespace:
+    description: 'Prompt namespace' 
+  version:
+    description: 'Prompt version'
+  author:
+    description: 'Prompt author'
+  description:
+    description: 'Prompt description'
+  tags:
+    description: 'Prompt tags (JSON array)'
+  created:
+    description: 'Prompt creation date'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+
+branding:
+  icon: 'file-text'
+  color: 'blue'
