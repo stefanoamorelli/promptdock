@@ -12,19 +12,48 @@ PromptDock lets you:
 
 Instead of maintaining separate `.cursorrules`, `CLAUDE.md`, and `copilot-instructions.md` files, you write prompts once and PromptDock creates all the provider-specific files.
 
-## Two Ways to Use PromptDock
+## How PromptDock Works
 
-### 1. **Project Mode** (Recommended)
-- Run `prompt init` in your project directory
-- Creates a `prompt.json` config file
-- Pull prompts from any repository into your project
-- Each project can use different prompts from different sources
+```mermaid
+graph TD
+    A[Create Prompt Repository] --> B[Organize Prompts in Folders]
+    B --> C[Push to GitHub]
+    C --> D[Run prompt init in Your Project]
+    D --> E[Configure Sources and Providers]
+    E --> F[Run prompt pull]
+    F --> G[Auto-Generate All AI Configs]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style G fill:#9f9,stroke:#333,stroke-width:2px
+```
 
-### 2. **Global Mode** (For Prompt Authors)
-- Run `prompt init --global --origin <repo-url>`
-- Manage a central prompt library
-- Create, edit, and push prompts to your repository
-- Use commands like `prompt new`, `prompt edit`, `prompt push`
+### The Two-Step Process
+
+**Step 1: Create Your Prompt Library (Once)**
+- Create a Git repository with prompts organized in folders
+- Use `prompt init --global` to manage this library
+- Add/edit prompts with `prompt new`, `prompt edit`, etc.
+
+**Step 2: Use Prompts in Projects (Daily)**
+- Run `prompt init` in each project
+- Configure which prompts to pull from which repos/namespaces
+- Run `prompt pull --all` to generate all AI configurations
+
+### Example Flow
+
+```bash
+# ONCE: Set up your prompt library
+git init my-company-prompts
+cd my-company-prompts
+mkdir -p web/frontend backend/api
+# ... add your prompts ...
+git push origin main
+
+# DAILY: In your projects
+cd my-react-app
+prompt init                    # Interactive setup
+prompt pull --all              # Generate .claude/, .cursor/, etc.
+```
 
 ## Supported AI Providers
 
@@ -535,7 +564,7 @@ Found a bug or want to add a provider? PRs welcome!
 
 ## License
 
-ISC License
+[GNU General Public License v3.0](LICENSE.md)
 
 ---
 Made by [Stefano Amorelli](https://amorelli.tech)
