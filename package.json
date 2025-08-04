@@ -19,6 +19,8 @@
   "license": "ISC",
   "description": "Lightweight CLI to manage, version, and fetch reusable AI prompts from a Git-backed registry. Supports metadata, namespacing, format transforms (Claude, Cursor, etc.), and CI integration.",
   "dependencies": {
+    "@inquirer/prompts": "^7.8.0",
+    "@notionhq/client": "^4.0.1",
     "commander": "^14.0.0",
     "execa": "^9.6.0",
     "gray-matter": "^4.0.3",

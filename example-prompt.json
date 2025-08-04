@@ -1,0 +1,57 @@
+{
+  "name": "my-web-project",
+  "description": "AI prompts for web development project",
+  "prompts": [
+    {
+      "name": "frontend-helpers",
+      "description": "React and TypeScript development prompts",
+      "repo": "https://github.com/mycompany/prompts-library.git",
+      "namespace": "web/frontend",
+      "folders": ["system", "user", "assistant", "components"],
+      "providers": {
+        "claude": { "enabled": true, "includeCommands": true },
+        "cursor": { "enabled": true },
+        "copilot": { "enabled": false }
+      }
+    },
+    {
+      "name": "backend-api",
+      "description": "Node.js API development prompts", 
+      "repo": "https://github.com/mycompany/prompts-library.git",
+      "namespace": "backend/node",
+      "folders": ["system", "user", "database", "testing"],
+      "providers": {
+        "claude": { "enabled": true, "includeCommands": false },
+        "cursor": { "enabled": true },
+        "aider": { "enabled": true }
+      }
+    }
+  ],
+  "providers": {
+    "claude": {
+      "folder": ".claude",
+      "includeCommands": true
+    },
+    "cursor": {
+      "folder": ".cursor",
+      "filename": ".cursorrules"
+    },
+    "copilot": {
+      "folder": ".github",
+      "filename": "copilot-instructions.md"
+    },
+    "aider": {
+      "folder": ".aider",
+      "filename": "conventions.md"
+    }
+  },
+  "gitignore": [
+    ".claude",
+    ".cursor",
+    ".github/copilot-instructions.md",
+    ".aider",
+    ".promptdock/",
+    "frontend-helpers/",
+    "backend-api/"
+  ]
+}

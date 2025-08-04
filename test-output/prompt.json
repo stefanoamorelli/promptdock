@@ -1,0 +1,63 @@
+{
+  "name": "test-web-project",
+  "description": "Testing PromptDock multi-provider setup",
+  "prompts": [
+    {
+      "name": "frontend-standards",
+      "description": "React and TypeScript standards",
+      "repo": "/home/amorelli/development/promptdock/test-repo",
+      "namespace": "web/frontend",
+      "folders": ["components", "styling", "best-practices"],
+      "providers": {
+        "claude": { "enabled": true, "includeCommands": true },
+        "cursor": { "enabled": true },
+        "copilot": { "enabled": true },
+        "gemini": { "enabled": true }
+      }
+    },
+    {
+      "name": "backend-patterns",
+      "description": "Node.js backend patterns",
+      "repo": "/home/amorelli/development/promptdock/test-repo",
+      "namespace": "backend/node",
+      "folders": ["api", "database", "security"],
+      "providers": {
+        "claude": { "enabled": true, "includeCommands": false },
+        "cursor": { "enabled": true },
+        "aider": { "enabled": true }
+      }
+    }
+  ],
+  "providers": {
+    "claude": {
+      "folder": ".claude",
+      "includeCommands": true
+    },
+    "cursor": {
+      "folder": ".cursor",
+      "filename": ".cursorrules"
+    },
+    "copilot": {
+      "folder": ".github",
+      "filename": "copilot-instructions.md"
+    },
+    "gemini": {
+      "folder": ".gemini",
+      "filename": "instructions.md"
+    },
+    "aider": {
+      "folder": ".aider",
+      "filename": "conventions.md"
+    }
+  },
+  "gitignore": [
+    ".claude",
+    ".cursor", 
+    ".github/copilot-instructions.md",
+    ".gemini",
+    ".aider",
+    ".promptdock/",
+    "frontend-standards/",
+    "backend-patterns/"
+  ]
+}

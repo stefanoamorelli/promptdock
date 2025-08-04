@@ -1,0 +1,89 @@
+# Aider Conventions
+
+# Node.js API Patterns
+
+## Express.js Structure
+Follow RESTful conventions and proper middleware organization.
+
+```typescript
+import express from 'express';
+import { authMiddleware } from '../middleware/auth';
+import { validateRequest } from '../middleware/validation';
+
+const router = express.Router();
+
+router.get('/users', authMiddleware, async (req, res) => {
+  try {
+    const users = await userService.findAll();
+    res.json({ data: users, status: 'success' });
+  } catch (error) {
+    res.status(500).json({ error: error.message, status: 'error' });
+  }
+});
+```
+
+## Error Handling
+- Use consistent error response format
+- Implement global error middleware
+- Log errors with proper context
+- Return appropriate HTTP status codes
+
+## Database Integration
+- Use TypeORM or Prisma for database operations
+- Implement proper connection pooling
+- Use transactions for data consistency
+- Always validate input data
+
+## Security
+- Implement rate limiting
+- Use helmet for security headers
+- Validate and sanitize all inputs
+- Use JWT for authentication with proper expiration
+
+---
+
+# Database Conventions
+
+## Schema Design
+Follow consistent naming and structure patterns.
+
+```typescript
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @Column({ unique: true })
+  email: string;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+```
+
+## Naming Conventions
+- Use snake_case for table and column names
+- Use descriptive names for foreign keys
+- Prefix boolean columns with `is_` or `has_`
+- Use plural names for tables
+
+## Migrations
+- Always create migrations for schema changes
+- Include rollback instructions
+- Test migrations on staging before production
+- Keep migrations small and focused
+
+## Queries
+- Use prepared statements to prevent SQL injection
+- Optimize queries with proper indexing
+- Avoid N+1 queries with proper eager loading
+- Use database-level constraints for data integrity

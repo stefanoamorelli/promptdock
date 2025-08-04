@@ -1,301 +1,317 @@
 # PromptDock
 
-A lightweight CLI tool to manage, version, and share reusable AI prompts through a Git-backed registry. PromptDock helps developers organize and collaborate on prompts for AI tools like Claude, Cursor, and other AI assistants.
+Manage AI prompts across multiple coding assistants from a single source. Stop copying the same instructions between Claude, Cursor, Copilot, and other AI tools.
 
-## Features
+## What it does
 
-- 📦 **Git-backed storage** - All prompts are stored in a Git repository for version control and collaboration
-- 🏷️ **Namespace organization** - Organize prompts by categories (web, backend, mobile, etc.)
-- 🔄 **Version management** - Track prompt versions and changes over time
-- 🏗️ **Format support** - Import from Claude (.md, .claude) and Cursor (.cursorrules, .mdc) files
-- 🚀 **CI/CD integration** - Easily integrate prompts into your workflows
-- 📝 **Metadata tracking** - Author, tags, descriptions, and creation dates
-- 🔍 **Easy discovery** - List and search through your prompt library
+PromptDock lets you:
+- Store prompts in git repositories with folder organization
+- Pull prompts from any repo/namespace into your project  
+- Generate configuration files for multiple AI providers automatically
+- Keep everything in sync with Notion (optional)
+
+Instead of maintaining separate `.cursorrules`, `CLAUDE.md`, and `copilot-instructions.md` files, you write prompts once and PromptDock creates all the provider-specific files.
+
+## Supported AI Providers
+
+| Provider | Output File | Features |
+|----------|-------------|----------|
+| **Claude** | `.claude/instructions.md` | Instructions + optional command docs |
+| **Cursor** | `.cursor/.cursorrules` | Standard Cursor rules format |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Markdown instructions |
+| **Gemini CLI** | `.gemini/instructions.md` | CLI-optimized with command examples |
+| **Codeium** | `.codeium/instructions.md` | Standard format |
+| **Continue** | `.continue/config.json` | JSON with rules array |
+| **Aider** | `.aider/conventions.md` | Coding conventions |
 
 ## Installation
 
-### Prerequisites
+| Method | Command |
+|--------|---------|
+| **npm** | `npm install -g promptdock` |
+| **pnpm** | `pnpm add -g promptdock` |
+| **From source** | See [Development](#development) section |
 
-- Node.js (v18 or higher)
-- Git installed and configured
-- GitHub CLI (`gh`) installed and authenticated (for author detection)
+## Complete Workflow
 
-### Quick Start
+### Step 1: Installation
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/promptdock.git
-cd promptdock
-
-# Install dependencies
-pnpm install
-
-# Build the TypeScript files
-pnpm build
-
-# Run in development mode
-pnpm dev
-
-# Or after building, run the compiled version
-pnpm start
-```
-
-## Usage
-
-### Initialize PromptDock
-
-First, set up PromptDock with your prompt repository:
+Install PromptDock globally:
 
 ```bash
-prompt init --origin https://github.com/yourusername/prompt-library.git
+npm install -g promptdock
+# or
+pnpm add -g promptdock
 ```
 
-This will:
-- Clone your prompt repository to `~/.config/promptdock/prompts`
-- Create a configuration file at `~/.config/promptdock/config.json`
+### Step 2: Set Up Your Project
 
-You can specify a custom directory:
+Navigate to your project and run the setup wizard:
 
 ```bash
-prompt init --origin https://github.com/yourusername/prompt-library.git --dir /custom/path
+cd my-awesome-project
+prompt init
 ```
 
-### Create a New Prompt
+The interactive wizard will guide you through:
 
-Create a new prompt with metadata:
+#### 2.1 Project Configuration
+```
+? Project name: my-awesome-project
+? Project description: AI prompts for web development
+```
+
+#### 2.2 AI Provider Selection
+```
+? Select AI providers to generate configs for:
+◉ Claude (with commands)
+◉ Cursor  
+◉ GitHub Copilot
+◯ Gemini CLI
+◯ Codeium
+◯ Continue
+◯ Aider
+```
+
+#### 2.3 Prompt Sources
+For each prompt collection you want:
+```
+? Prompt name: frontend-standards
+? Prompt description: React and TypeScript best practices
+? Global repository URL: https://github.com/company/prompts.git
+? Namespace within repo: web/frontend
+? Folders to create: system,user,components
+```
+
+#### 2.4 GitIgnore Configuration  
+```
+? Select folders to add to .gitignore:
+◉ .claude
+◉ .cursor
+◉ .github
+◯ frontend-standards/
+```
+
+This creates:
+- `prompt.json` - Your project configuration
+- Folder structure for prompts
+- Provider folders (`.claude/`, `.cursor/`, etc.)
+- Updated `.gitignore`
+
+### Step 3: Pull Your Prompts
+
+Download and generate all configurations:
 
 ```bash
-prompt new --namespace web --name "react-component" --version 1.0.0 --description "React component best practices"
+prompt pull --all
 ```
 
-Options:
-- `--namespace` (required): Category for the prompt (e.g., web, backend, mobile)
-- `--name` (required): Prompt name (will be sanitized to lowercase with hyphens)
-- `--version` (required): Semantic version (e.g., 1.0.0)
-- `--description` (required): Brief description of the prompt
-- `--author`: Author name (defaults to GitHub username)
-- `--tags`: Comma-separated tags (e.g., "react,typescript,frontend")
-- `--dry-run`: Create locally without pushing to Git
+Watch PromptDock work:
+```
+🚀 Pulling 1 prompt(s)...
 
-The command will:
-1. Create a new markdown file with frontmatter
-2. Open your default editor (`$EDITOR` or nano)
-3. Validate the prompt structure
-4. Optionally commit and push to your Git repository
+📦 Processing frontend-standards...
+📥 Cloning from https://github.com/company/prompts.git...
+   ✅ system/architecture-principles.md
+   ✅ user/code-review-checklist.md
+   ✅ components/react-patterns.md
+   📝 Generating provider configs...
+   ✅ Created claude config: .claude/instructions.md
+   ✅ Created claude config: .claude/commands.md
+   ✅ Created cursor config: .cursor/.cursorrules
+   ✅ Created copilot config: .github/copilot-instructions.md
+   ✅ frontend-standards pulled successfully (3 files)
 
-### Import Existing Prompts
+🎉 All prompts pulled successfully!
+```
 
-Import Claude or Cursor configuration files into your prompt library:
+### Step 4: Your Project is Ready
+
+Your project now has everything set up:
+
+```
+my-awesome-project/
+├── prompt.json                      # PromptDock configuration
+├── .gitignore                       # Updated with AI folders
+├── .claude/
+│   ├── instructions.md             # All prompts for Claude
+│   └── commands.md                 # Claude command reference
+├── .cursor/
+│   └── .cursorrules               # Cursor IDE rules
+├── .github/
+│   └── copilot-instructions.md    # GitHub Copilot prompts
+└── frontend-standards/             # Organized source prompts
+    ├── system/
+    │   └── architecture-principles.md
+    ├── user/
+    │   └── code-review-checklist.md
+    └── components/
+        └── react-patterns.md
+```
+
+### Step 5: Start Coding with AI
+
+Now your AI tools automatically pick up the configurations:
+
+| AI Tool | Configuration Location | Auto-loaded |
+|---------|----------------------|-------------|
+| **Claude** | `.claude/instructions.md` | ✅ Yes |
+| **Cursor** | `.cursor/.cursorrules` | ✅ Yes |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | ✅ Yes |
+| **Gemini CLI** | `.gemini/instructions.md` | Manual |
+
+### Step 6: Keep Prompts Updated
+
+When your team updates the prompt repository:
 
 ```bash
-# Import a Claude.md file
-prompt pull /path/to/CLAUDE.md --namespace web
+# Pull latest changes
+prompt pull --all
 
-# Import a .cursorrules file
-prompt pull /path/to/.cursorrules --namespace backend
-
-# Copy to local project instead of prompt library
-prompt pull /path/to/CLAUDE.md --to-local
-
-# Split a file into multiple prompts (one per section)
-prompt pull /path/to/rules.md --namespace mobile --split
-
-# Dry run to preview what would be imported
-prompt pull /path/to/file.md --namespace test --dry-run
+# Or pull specific prompts
+prompt pull --prompt frontend-standards
 ```
 
-Options:
-- `--namespace`: Target namespace for the prompt
-- `--name`: Custom name (defaults to auto-detected)
-- `--to-local`: Copy to project directory (CLAUDE.md or .cursorrules)
-- `--split`: Split into multiple prompts by sections
-- `--output`: Custom output path
-- `--dry-run`: Preview without making changes
+### Step 7: Team Collaboration (Optional)
 
-### List Prompts
-
-View all prompts in your library:
+Set up Notion integration for team visibility:
 
 ```bash
-# List all prompts
-prompt list
+# One-time setup
+prompt notion setup
 
-# List prompts in a specific namespace
-prompt list --namespace web
-
-# Search prompts by tag
-prompt list --tag react
-
-# Show detailed information
-prompt list --verbose
+# Sync prompts to Notion database
+prompt notion sync
 ```
 
-### Edit Prompts
+## Real-World Example
 
-Edit an existing prompt:
-
-```bash
-# Edit by name and namespace
-prompt edit --namespace web --name react-component
-
-# Edit specific version
-prompt edit --namespace web --name react-component --version 1.0.0
-```
-
-### Delete Prompts
-
-Remove prompts from your library:
-
-```bash
-# Delete a specific prompt
-prompt delete --namespace web --name old-prompt
-
-# Delete with confirmation
-prompt delete --namespace backend --name deprecated-api
-```
-
-### Sync Repository
-
-Keep your local prompt library in sync:
-
-```bash
-# Pull latest changes from remote
-prompt sync
-
-# Check status of local changes
-prompt status
-```
-
-### Push Changes
-
-Push local changes to the remote repository:
-
-```bash
-prompt push
-```
-
-## Prompt Format
-
-Prompts are stored as markdown files with YAML frontmatter:
-
-```markdown
----
-name: react-hooks
-namespace: web
-version: 1.0.0
-author: John Doe
-description: Best practices for React hooks
-created: 2024-01-15
-tags: ["react", "hooks", "javascript"]
----
-
-# React Hooks Best Practices
-
-Your prompt content goes here...
-```
-
-### Required Fields
-
-- `name`: Sanitized prompt name (lowercase, hyphens)
-- `namespace`: Category/namespace
-- `version`: Semantic version
-- `author`: Prompt author
-- `description`: Brief description
-- `created`: Creation date (YYYY-MM-DD)
-
-### Optional Fields
-
-- `tags`: Array of tags for categorization
-
-## Directory Structure
-
-```
-~/.config/promptdock/
-├── config.json          # PromptDock configuration
-└── prompts/            # Git repository with prompts
-    ├── web/
-    │   ├── react-component-1.0.0.md
-    │   └── vue-setup-2.0.0.md
-    ├── backend/
-    │   ├── api-design-1.0.0.md
-    │   └── database-schema-1.1.0.md
-    └── mobile/
-        └── react-native-1.0.0.md
-```
-
-## CI/CD Integration
-
-PromptDock can be integrated into your CI/CD pipeline to automatically fetch and apply prompts:
-
-```bash
-# In your CI script
-prompt init --origin $PROMPT_REPO_URL
-prompt pull $NAMESPACE/$NAME --to-local --output ./CLAUDE.md
-```
-
-## Configuration
-
-The configuration file is stored at `~/.config/promptdock/config.json`:
+Here's what a typical `prompt.json` looks like for a React project:
 
 ```json
 {
-  "origin": "https://github.com/yourusername/prompt-library.git",
-  "local": "/home/user/.config/promptdock/prompts"
+  "name": "react-dashboard",
+  "description": "Enterprise dashboard with React + TypeScript",
+  "prompts": [
+    {
+      "name": "frontend-standards",
+      "description": "React, TypeScript, and component standards",
+      "repo": "https://github.com/company/engineering-prompts.git",
+      "namespace": "frontend/react",
+      "folders": ["architecture", "components", "testing"],
+      "providers": {
+        "claude": { "enabled": true, "includeCommands": true },
+        "cursor": { "enabled": true },
+        "copilot": { "enabled": true }
+      }
+    },
+    {
+      "name": "api-integration",
+      "description": "REST API and GraphQL patterns",
+      "repo": "https://github.com/company/engineering-prompts.git", 
+      "namespace": "backend/api",
+      "folders": ["rest", "graphql", "auth"],
+      "providers": {
+        "claude": { "enabled": true },
+        "aider": { "enabled": true }
+      }
+    }
+  ],
+  "providers": {
+    "claude": { "folder": ".claude", "includeCommands": true },
+    "cursor": { "folder": ".cursor", "filename": ".cursorrules" },
+    "copilot": { "folder": ".github", "filename": "copilot-instructions.md" },
+    "aider": { "folder": ".aider", "filename": "conventions.md" }
+  },
+  "gitignore": [".claude", ".cursor", ".github", ".aider", ".promptdock/"]
 }
 ```
 
+## Notion Integration (Optional)
+
+Sync your prompts to a Notion database for team collaboration:
+
+| Command | Description |
+|---------|-------------|
+| `prompt notion setup` | Configure Notion integration |
+| `prompt notion sync` | Sync prompts to Notion database |
+| `prompt notion status` | Check connection status |
+
+## Testing PromptDock
+
+Want to try it out? There's a test script included:
+
+```bash
+# Clone this repo
+git clone https://github.com/stefanoamorelli/promptdock.git
+cd promptdock
+
+# Install and build
+pnpm install && pnpm build
+
+# Run the test
+./test-script.sh
+```
+
+This creates a sample project with prompts and shows all the generated provider files.
+
 ## Development
 
-```bash
-# Run in development mode
-pnpm dev
+| Task | Command |
+|------|---------|
+| **Install deps** | `pnpm install` |
+| **Build** | `pnpm build` |
+| **Dev mode** | `pnpm dev` |
+| **Test** | `./test-script.sh` |
 
-# Build TypeScript
-pnpm build
+### Project Structure
 
-# Clean build directory
-pnpm clean
-
-# Run specific command in dev
-pnpm dev -- list --namespace web
-
-# After building, test the CLI
-./dist/index.js --help
+```
+src/
+├── commands/          # CLI commands
+│   ├── init.ts       # Interactive setup
+│   ├── enhanced-pull.ts  # Multi-provider pull
+│   └── notion-sync.ts    # Notion integration
+├── lib/
+│   ├── config.ts     # Configuration types
+│   ├── providers.ts  # Provider-specific generators
+│   └── notion-plugin.ts  # Notion API integration
+└── index.ts          # Main CLI entry
 ```
 
-## Best Practices
+## Common Use Cases
 
-1. **Use semantic versioning** - Track prompt evolution with proper versions
-2. **Organize by namespace** - Group related prompts together
-3. **Write clear descriptions** - Help others understand prompt purpose
-4. **Tag appropriately** - Make prompts discoverable
-5. **Commit messages** - Use clear commit messages when updating prompts
-6. **Review changes** - Always review prompts before pushing
+| Scenario | Setup |
+|----------|-------|
+| **Team standards** | Shared repo with coding standards per language/framework |  
+| **Project templates** | Starter prompts for new projects |
+| **Personal workflow** | Your own prompt library synced across projects |
+| **Enterprise** | Company-wide prompt standards with Notion tracking |
 
-## Troubleshooting
+## Why PromptDock?
 
-### "No configuration found"
-
-Run `prompt init` first to set up PromptDock with your repository.
-
-### "Could not get GitHub user info"
-
-Ensure you're logged in with GitHub CLI:
+Instead of this mess:
 ```bash
-gh auth login
+# Copy prompts manually to each project
+cp ~/.prompts/react-rules.md ./CLAUDE.md
+cp ~/.prompts/react-rules.md ./.cursorrules  
+cp ~/.prompts/react-rules.md ./.github/copilot-instructions.md
+# Repeat for every project...
 ```
 
-### Editor not opening
-
-Set your preferred editor:
+You get this:
 ```bash
-export EDITOR=vim  # or code, nano, etc.
+prompt init    # One-time setup
+prompt pull --all  # Auto-generates all provider files
 ```
+
+## Contributing
+
+Found a bug or want to add a provider? PRs welcome!
 
 ## License
 
-ISC License - see package.json for details
+ISC License
 
-## Author
-
-Stefano Amorelli - [stefano@amorelli.tech](mailto:stefano@amorelli.tech) - [https://amorelli.tech](https://amorelli.tech)
+---
+Made by [Stefano Amorelli](https://amorelli.tech)
